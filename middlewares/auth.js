@@ -43,7 +43,7 @@ exports.auth = async (req, res, next) => {
 	}
 };
 
-// isStudent
+// isStudent handler
 exports.isStudent = async (req, res, next) => {
 	try {
 		const userDetails = await User.findOne({ email: req.user.email });

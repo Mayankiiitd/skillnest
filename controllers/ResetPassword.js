@@ -52,6 +52,7 @@ exports.resetPassword = async (req, res) => {
   try {
     const { password, confirmPassword, token } = req.body
 
+    // verify the password
     if (confirmPassword !== password) {
       return res.json({
         success: false,
