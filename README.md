@@ -1,1 +1,1 @@
-# SkillNest Ed=-Tech Platfrom
+SkillNest Ed-Tech Platfrom
