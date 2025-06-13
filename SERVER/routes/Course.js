@@ -1,105 +1,200 @@
-// Import the required modules
-const express = require("express")
-const router = express.Router()
+const Course = require("../models/Course");
+const Category = require("../models/Category");
+const User = require("../models/User");
+const { uploadImageToCloudinary } = require("../utils/imageUploader");
+// Function to create a new course
+exports.createCourse = async (req, res) => {
+	try {
+		// Get user ID from request object
+		const userId = req.user.id;
 
-// Import the Controllers
+		// Get all required fields from request body
+		let {
+			courseName,
+			courseDescription,
+			whatYouWillLearn,
+			price,
+			tag,
+			category,
+			status,
+			instructions,
+		} = req.body;
 
-// Course Controllers Import
-const {
-  createCourse,
-  getAllCourses,
-  getCourseDetails,
-  getFullCourseDetails,
-  editCourse,
-  getInstructorCourses,
-  deleteCourse,
-} = require("../controllers/Course")
+		// Get thumbnail image from request files
+		const thumbnail = req.files.thumbnailImage;
 
-// Tags Controllers Import
+		// Check if any of the required fields are missing
+		if (
+			!courseName ||
+			!courseDescription ||
+			!whatYouWillLearn ||
+			!price ||
+			!tag ||
+			!thumbnail ||
+			!category
+		) {
+			return res.status(400).json({
+				success: false,
+				message: "All Fields are Mandatory",
+			});
+		}
+		if (!status || status === undefined) {
+			status = "Draft";
+		}
+		// Check if the user is an instructor
+		const instructorDetails = await User.findById(userId, {
+			accountType: "Instructor",
+		});
 
-// Categories Controllers Import
-const {
-  showAllCategories,
-  createCategory,
-  categoryPageDetails,
-} = require("../controllers/Category")
+		if (!instructorDetails) {
+			return res.status(404).json({
+				success: false,
+				message: "Instructor Details Not Found",
+			});
+		}
 
-// Sections Controllers Import
-const {
-  createSection,
-  updateSection,
-  deleteSection,
-} = require("../controllers/Section")
+		// Check if the tag given is valid
+		const categoryDetails = await Category.findById(category);
+		if (!categoryDetails) {
+			return res.status(404).json({
+				success: false,
+				message: "Category Details Not Found",
+			});
+		}
+		// Upload the Thumbnail to Cloudinary
+		const thumbnailImage = await uploadImageToCloudinary(
+			thumbnail,
+			process.env.FOLDER_NAME
+		);
+		console.log(thumbnailImage);
+		// Create a new course with the given details
+		const newCourse = await Course.create({
+			courseName,
+			courseDescription,
+			instructor: instructorDetails._id,
+			whatYouWillLearn: whatYouWillLearn,
+			price,
+			tag: tag,
+			category: categoryDetails._id,
+			thumbnail: thumbnailImage.secure_url,
+			status: status,
+			instructions: instructions,
+		});
 
-// Sub-Sections Controllers Import
-const {
-  createSubSection,
-  updateSubSection,
-  deleteSubSection,
-} = require("../controllers/Subsection")
+		// Add the new course to the User Schema of the Instructor
+		await User.findByIdAndUpdate(
+			{
+				_id: instructorDetails._id,
+			},
+			{
+				$push: {
+					courses: newCourse._id,
+				},
+			},
+			{ new: true }
+		);
+		// Add the new course to the Categories
+		await Category.findByIdAndUpdate(
+			{ _id: category },
+			{
+				$push: {
+					course: newCourse._id,
+				},
+			},
+			{ new: true }
+		);
+		// Return the new course and a success message
+		res.status(200).json({
+			success: true,
+			data: newCourse,
+			message: "Course Created Successfully",
+		});
+	} catch (error) {
+		// Handle any errors that occur during the creation of the course
+		console.error(error);
+		res.status(500).json({
+			success: false,
+			message: "Failed to create course",
+			error: error.message,
+		});
+	}
+};
 
-// Rating Controllers Import
-const {
-  createRating,
-  getAverageRating,
-  getAllRatingReview,
-} = require("../controllers/RatingandReview")
-const {
-  updateCourseProgress,
-  getProgressPercentage,
-} = require("../controllers/courseProgress")
-// Importing Middlewares
-const { auth, isInstructor, isStudent, isAdmin } = require("../middleware/auth")
+exports.getAllCourses = async (req, res) => {
+	try {
+		const allCourses = await Course.find(
+			{},
+			{
+				courseName: true,
+				price: true,
+				thumbnail: true,
+				instructor: true,
+				ratingAndReviews: true,
+				studentsEnroled: true,
+			}
+		)
+			.populate("instructor")
+			.exec();
+		return res.status(200).json({
+			success: true,
+			data: allCourses,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.status(404).json({
+			success: false,
+			message: `Can't Fetch Course Data`,
+			error: error.message,
+		});
+	}
+};
 
-// ********************************************************************************************************
-//                                      Course routes
-// ********************************************************************************************************
+//getCourseDetails
+exports.getCourseDetails = async (req, res) => {
+    try {
+            //get id
+            const {courseId} = req.body;
+            //find course details
+            const courseDetails = await Course.find(
+                                        {_id:courseId})
+                                        .populate(
+                                            {
+                                                path:"instructor",
+                                                populate:{
+                                                    path:"additionalDetails",
+                                                },
+                                            }
+                                        )
+                                        .populate("category")
+                                        .populate("ratingAndreviews")
+                                        .populate({
+                                            path:"courseContent",
+                                            populate:{
+                                                path:"subSection",
+                                            },
+                                        })
+                                        .exec();
 
-// Courses can Only be Created by Instructors
-router.post("/createCourse", auth, isInstructor, createCourse)
-// Edit Course routes
-router.post("/editCourse", auth, isInstructor, editCourse)
-//Add a Section to a Course
-router.post("/addSection", auth, isInstructor, createSection)
-// Update a Section
-router.post("/updateSection", auth, isInstructor, updateSection)
-// Delete a Section
-router.post("/deleteSection", auth, isInstructor, deleteSection)
-// Edit Sub Section
-router.post("/updateSubSection", auth, isInstructor, updateSubSection)
-// Delete Sub Section
-router.post("/deleteSubSection", auth, isInstructor, deleteSubSection)
-// Add a Sub Section to a Section
-router.post("/addSubSection", auth, isInstructor, createSubSection)
-// Get all Courses Under a Specific Instructor
-router.get("/getInstructorCourses", auth, isInstructor, getInstructorCourses)
-// Get all Registered Courses
-router.get("/getAllCourses", getAllCourses)
-// Get Details for a Specific Courses
-router.post("/getCourseDetails", getCourseDetails)
-// Get Details for a Specific Courses
-router.post("/getFullCourseDetails", auth, getFullCourseDetails)
-// To Update Course Progress
-router.post("/updateCourseProgress", auth, isStudent, updateCourseProgress)
-// To get Course Progress
-// router.post("/getProgressPercentage", auth, isStudent, getProgressPercentage)
-// Delete a Course
-router.delete("/deleteCourse", deleteCourse)
+                //validation
+                if(!courseDetails) {
+                    return res.status(400).json({
+                        success:false,
+                        message:`Could not find the course with ${courseId}`,
+                    });
+                }
+                //return response
+                return res.status(200).json({
+                    success:true,
+                    message:"Course Details fetched successfully",
+                    data:courseDetails,
+                })
 
-// ********************************************************************************************************
-//                                      Category routes (Only by Admin)
-// ********************************************************************************************************
-// Category can Only be Created by Admin
-// TODO: Put IsAdmin Middleware here
-router.post("/createCategory", auth, isAdmin, createCategory)
-router.get("/showAllCategories", showAllCategories)
-router.post("/getCategoryPageDetails", categoryPageDetails)
-
-// ********************************************************************************************************
-//                                      Rating and Review
-// ********************************************************************************************************
-router.post("/createRating", auth, isStudent, createRating)
-router.get("/getAverageRating", getAverageRating)
-router.get("/getReviews", getAllRatingReview)
-
-module.exports = router
+    }
+    catch(error) {
+        console.log(error);
+        return res.status(500).json({
+            success:false,
+            message:error.message,
+        });
+    }
+}
