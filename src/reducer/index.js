@@ -6,8 +6,8 @@ import cartReducer from "../slices/cartSlice"
 
 const rootReducer  = combineReducers({
     auth: authReducer,
-    profile:profileReducer,
-    cart:cartReducer,
+    profile: profileReducer,
+    cart: cartReducer,
 })
 
 export default rootReducer
