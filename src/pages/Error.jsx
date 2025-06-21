@@ -2,8 +2,8 @@ import React from 'react'
 
 const Error = () => {
   return (
-    <div>
-        
+    <div className='flex justify-center items-center text-3xl text-red'>
+      Error - 404 Not found
     </div>
   )
 }
