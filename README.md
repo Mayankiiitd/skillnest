@@ -4,7 +4,7 @@ This is a starter pack for creating React projects with Tailwind CSS configured.
 
 ## Usage
 
-This starter pack includes a basic setup for using **Tailwind CSS with React**. To start building your own components and styles, follow these steps:
+This starter pack includes the basic setup for using **Tailwind CSS with React**. To start building your own components and styles, follow these steps:
 
 1. Clone the repository to your local machine.
     ```sh
