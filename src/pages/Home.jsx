@@ -14,7 +14,7 @@ import ExploreMore from '../components/core/HomePage/ExploreMore'
 
 const Home = () => {
   return (
-    <div>
+    <div className=' bg-white'>
       {/*Section1  */}
       <div className='relative mx-auto flex flex-col w-11/12 max-w-maxContent items-center 
       text-white justify-between'>
@@ -31,12 +31,12 @@ const Home = () => {
 
         </Link>
 
-        <div className='text-center text-4xl font-semibold mt-7'>
+        <div className='text-center text-4xl font-semibold mt-7 text-richblack-900'>
             Empower Your Future with
             <HighlightText text={"Coding Skills"} />
         </div>
 
-        <div className=' mt-4 w-[90%] text-center text-lg font-bold text-richblack-300'>
+        <div className=' mt-4 w-[90%] text-center text-lg font-bold text-richblack-800'>
             With our online coding courses, you can learn at your own pace, from anywhere in the world, and get access to a wealth of resources, including hands-on projects, quizzes, and personalized feedback from instructors. 
         </div>
 
@@ -61,13 +61,13 @@ const Home = () => {
         </div>
 
         {/* Code Section 1 */}
-        <div>
+        <div className='' >
             <CodeBlocks 
                 position={"lg:flex-row"}
                 heading={
-                    <div className='text-4xl font-semibold'>
+                    <div className='text-4xl text-richblack-900 font-semibold'>
                         Unlock Your
-                        <HighlightText text={"coding potential"}/>
+                        <HighlightText text={"coding potential "}/>
                         with our online courses
                     </div>
                 }
@@ -99,7 +99,7 @@ const Home = () => {
             <CodeBlocks 
                 position={"lg:flex-row-reverse"}
                 heading={
-                    <div className='text-4xl font-semibold'>
+                    <div className='text-4xl text-richblack-900 font-semibold'>
                         Unlock Your
                         <HighlightText text={"coding potential"}/>
                         with our online courses
