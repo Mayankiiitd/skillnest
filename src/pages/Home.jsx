@@ -11,10 +11,11 @@ import LearningLanguageSection from '../components/core/HomePage/LearningLanguag
 import InstructorSection from '../components/core/HomePage/InstructorSection'
 import Footer from '../components/common/Footer'
 import ExploreMore from '../components/core/HomePage/ExploreMore'
+import ReviewSlider from '../components/common/ReviewSlider'
 
 const Home = () => {
   return (
-    <div className=' bg-white'>
+    <div>
       {/*Section1  */}
       <div className='relative mx-auto flex flex-col w-11/12 max-w-maxContent items-center 
       text-white justify-between'>
@@ -31,12 +32,12 @@ const Home = () => {
 
         </Link>
 
-        <div className='text-center text-4xl font-semibold mt-7 text-richblack-900'>
+        <div className='text-center text-4xl font-semibold mt-7'>
             Empower Your Future with
             <HighlightText text={"Coding Skills"} />
         </div>
 
-        <div className=' mt-4 w-[90%] text-center text-lg font-bold text-richblack-800'>
+        <div className=' mt-4 w-[90%] text-center text-lg font-bold text-richblack-300'>
             With our online coding courses, you can learn at your own pace, from anywhere in the world, and get access to a wealth of resources, including hands-on projects, quizzes, and personalized feedback from instructors. 
         </div>
 
@@ -61,13 +62,13 @@ const Home = () => {
         </div>
 
         {/* Code Section 1 */}
-        <div className='' >
+        <div>
             <CodeBlocks 
                 position={"lg:flex-row"}
                 heading={
-                    <div className='text-4xl text-richblack-900 font-semibold'>
+                    <div className='text-4xl font-semibold'>
                         Unlock Your
-                        <HighlightText text={"coding potential "}/>
+                        <HighlightText text={"coding potential"}/>
                         with our online courses
                     </div>
                 }
@@ -99,7 +100,7 @@ const Home = () => {
             <CodeBlocks 
                 position={"lg:flex-row-reverse"}
                 heading={
-                    <div className='text-4xl text-richblack-900 font-semibold'>
+                    <div className='text-4xl font-semibold'>
                         Unlock Your
                         <HighlightText text={"coding potential"}/>
                         with our online courses
@@ -198,7 +199,7 @@ const Home = () => {
 
             <h2 className='text-center text-4xl font-semobold mt-10'>review from Other Learners</h2>
             {/* Review Slider here */}
-            
+            <ReviewSlider />
       </div>
 
 
