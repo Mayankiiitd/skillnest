@@ -1,143 +1,112 @@
 import { toast } from "react-hot-toast"
 
-import rzpLogo from "../../assets/Logo/rzp_logo.png"
-import { resetCart } from "../../slices/cartSlice"
-import { setPaymentLoading } from "../../slices/courseSlice"
+import { setUser } from "../../slices/profileSlice"
 import { apiConnector } from "../apiConnector"
-import { studentEndpoints } from "../apis"
+import { settingsEndpoints } from "../apis"
+import { logout } from "./authAPI"
 
 const {
-  COURSE_PAYMENT_API,
-  COURSE_VERIFY_API,
-  SEND_PAYMENT_SUCCESS_EMAIL_API,
-} = studentEndpoints
+  UPDATE_DISPLAY_PICTURE_API,
+  UPDATE_PROFILE_API,
+  CHANGE_PASSWORD_API,
+  DELETE_PROFILE_API,
+} = settingsEndpoints
 
-// Load the Razorpay SDK from the CDN
-function loadScript(src) {
-  return new Promise((resolve) => {
-    const script = document.createElement("script")
-    script.src = src
-    script.onload = () => {
-      resolve(true)
+export function updateDisplayPicture(token, formData) {
+  return async (dispatch) => {
+    const toastId = toast.loading("Loading...")
+    try {
+      const response = await apiConnector(
+        "PUT",
+        UPDATE_DISPLAY_PICTURE_API,
+        formData,
+        {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        }
+      )
+      console.log(
+        "UPDATE_DISPLAY_PICTURE_API API RESPONSE............",
+        response
+      )
+
+      if (!response.data.success) {
+        throw new Error(response.data.message)
+      }
+      toast.success("Display Picture Updated Successfully")
+      dispatch(setUser(response.data.data))
+    } catch (error) {
+      console.log("UPDATE_DISPLAY_PICTURE_API API ERROR............", error)
+      toast.error("Could Not Update Display Picture")
     }
-    script.onerror = () => {
-      resolve(false)
-    }
-    document.body.appendChild(script)
-  })
+    toast.dismiss(toastId)
+  }
 }
 
-// Buy the Course
-export async function BuyCourse(
-  token,
-  courses,
-  user_details,
-  navigate,
-  dispatch
-) {
+export function updateProfile(token, formData) {
+  return async (dispatch) => {
+    const toastId = toast.loading("Loading...")
+    try {
+      const response = await apiConnector("PUT", UPDATE_PROFILE_API, formData, {
+        Authorization: `Bearer ${token}`,
+      })
+      console.log("UPDATE_PROFILE_API API RESPONSE............", response)
+
+      if (!response.data.success) {
+        throw new Error(response.data.message)
+      }
+      const userImage = response.data.updatedUserDetails.image
+        ? response.data.updatedUserDetails.image
+        : `https://api.dicebear.com/5.x/initials/svg?seed=${response.data.updatedUserDetails.firstName} ${response.data.updatedUserDetails.lastName}`
+      dispatch(
+        setUser({ ...response.data.updatedUserDetails, image: userImage })
+      )
+      toast.success("Profile Updated Successfully")
+    } catch (error) {
+      console.log("UPDATE_PROFILE_API API ERROR............", error)
+      toast.error("Could Not Update Profile")
+    }
+    toast.dismiss(toastId)
+  }
+}
+
+export async function changePassword(token, formData) {
   const toastId = toast.loading("Loading...")
   try {
-    // Loading the script of Razorpay SDK
-    const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js")
-
-    if (!res) {
-      toast.error(
-        "Razorpay SDK failed to load. Check your Internet Connection."
-      )
-      return
-    }
-
-    // Initiating the Order in Backend
-    const orderResponse = await apiConnector(
-      "POST",
-      COURSE_PAYMENT_API,
-      {
-        courses,
-      },
-      {
-        Authorization: `Bearer ${token}`,
-      }
-    )
-
-    if (!orderResponse.data.success) {
-      throw new Error(orderResponse.data.message)
-    }
-    console.log("PAYMENT RESPONSE FROM BACKEND............", orderResponse.data)
-
-    // Opening the Razorpay SDK
-    const options = {
-      key: process.env.RAZORPAY_KEY,
-      currency: orderResponse.data.data.currency,
-      amount: `${orderResponse.data.data.amount}`,
-      order_id: orderResponse.data.data.id,
-      name: "StudyNotion",
-      description: "Thank you for Purchasing the Course.",
-      image: rzpLogo,
-      prefill: {
-        name: `${user_details.firstName} ${user_details.lastName}`,
-        email: user_details.email,
-      },
-      handler: function (response) {
-        sendPaymentSuccessEmail(response, orderResponse.data.data.amount, token)
-        verifyPayment({ ...response, courses }, token, navigate, dispatch)
-      },
-    }
-    const paymentObject = new window.Razorpay(options)
-
-    paymentObject.open()
-    paymentObject.on("payment.failed", function (response) {
-      toast.error("Oops! Payment Failed.")
-      console.log(response.error)
-    })
-  } catch (error) {
-    console.log("PAYMENT API ERROR............", error)
-    toast.error("Could Not make Payment.")
-  }
-  toast.dismiss(toastId)
-}
-
-// Verify the Payment
-async function verifyPayment(bodyData, token, navigate, dispatch) {
-  const toastId = toast.loading("Verifying Payment...")
-  dispatch(setPaymentLoading(true))
-  try {
-    const response = await apiConnector("POST", COURSE_VERIFY_API, bodyData, {
+    const response = await apiConnector("POST", CHANGE_PASSWORD_API, formData, {
       Authorization: `Bearer ${token}`,
     })
-
-    console.log("VERIFY PAYMENT RESPONSE FROM BACKEND............", response)
+    console.log("CHANGE_PASSWORD_API API RESPONSE............", response)
 
     if (!response.data.success) {
       throw new Error(response.data.message)
     }
-
-    toast.success("Payment Successful. You are Added to the course ")
-    navigate("/dashboard/enrolled-courses")
-    dispatch(resetCart())
+    toast.success("Password Changed Successfully")
   } catch (error) {
-    console.log("PAYMENT VERIFY ERROR............", error)
-    toast.error("Could Not Verify Payment.")
+    console.log("CHANGE_PASSWORD_API API ERROR............", error)
+    toast.error(error.response.data.message)
   }
   toast.dismiss(toastId)
-  dispatch(setPaymentLoading(false))
 }
 
-// Send the Payment Success Email
-async function sendPaymentSuccessEmail(response, amount, token) {
-  try {
-    await apiConnector(
-      "POST",
-      SEND_PAYMENT_SUCCESS_EMAIL_API,
-      {
-        orderId: response.razorpay_order_id,
-        paymentId: response.razorpay_payment_id,
-        amount,
-      },
-      {
+export function deleteProfile(token, navigate) {
+  return async (dispatch) => {
+    const toastId = toast.loading("Loading...")
+    try {
+      const response = await apiConnector("DELETE", DELETE_PROFILE_API, null, {
         Authorization: `Bearer ${token}`,
+      })
+      console.log("DELETE_PROFILE_API API RESPONSE............", response)
+
+      if (!response.data.success) {
+        throw new Error(response.data.message)
       }
-    )
-  } catch (error) {
-    console.log("PAYMENT SUCCESS EMAIL ERROR............", error)
+      toast.success("Profile Deleted Successfully")
+      dispatch(logout(navigate))
+    } catch (error) {
+      console.log("DELETE_PROFILE_API API ERROR............", error)
+      toast.error("Could Not Delete Profile")
+    }
+    toast.dismiss(toastId)
   }
 }
