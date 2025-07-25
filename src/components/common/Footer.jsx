@@ -1,6 +1,7 @@
 import React from "react";
 import { FooterLink2 } from "../../data/footer-links";
 import { Link } from "react-router-dom";
+import { IoLogoSkype } from "react-icons/io5";
 
 // Images
 import Logo from "../../assets/Logo/Logo-Full-Light.png";
@@ -30,7 +31,14 @@ const Footer = () => {
           {/* Section 1 */}
           <div className="lg:w-[50%] flex flex-wrap flex-row justify-between lg:border-r lg:border-richblack-700 pl-3 lg:pr-5 gap-3">
             <div className="w-[30%] flex flex-col gap-3 lg:w-[30%] mb-7 lg:pl-0">
-              <img src={Logo} alt="" className="object-contain" />
+              {/* <img src={Logo} alt="" className="object-contain" /> */}
+              <Link to="/">
+                <div className=" text-white flex items-center gap-1">
+                  <IoLogoSkype size={26}/>
+                  <span className=" text-lg">KillNest</span>
+                </div>
+                {/* <img src={logo} alt="Logo" width={160} height={32} loading="lazy" /> */}
+              </Link>
               <h1 className="text-richblack-50 font-semibold text-[16px]">
                 Company
               </h1>
@@ -172,7 +180,7 @@ const Footer = () => {
             })}
           </div>
 
-          <div className="text-center">Made with ❤️ CodeHelp © 2023 Studynotion</div>
+          <div className="text-center">© 2025 SkillNest. All rights reserved.</div>
         </div>
       </div>
     </div>

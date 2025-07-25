@@ -10,6 +10,8 @@ import { apiConnector } from "../../services/apiConnector"
 import { categories } from "../../services/apis"
 import { ACCOUNT_TYPE } from "../../utils/constants"
 import ProfileDropdown from "../core/Auth/ProfileDropdown"
+import { IoLogoSkype } from "react-icons/io5";
+
 
 // const subLinks = [
 //   {
@@ -67,7 +69,13 @@ function Navbar() {
       <div className="flex w-11/12 max-w-maxContent items-center justify-between">
         {/* Logo */}
         <Link to="/">
-          <img src={logo} alt="Logo" width={160} height={32} loading="lazy" />
+          <div className=" text-white flex justify-center items-center gap-1">
+            <div>
+              <IoLogoSkype size={26}/>
+            </div>
+            <span className=" text-lg">KillNest</span>
+          </div>
+          {/* <img src={logo} alt="Logo" width={160} height={32} loading="lazy" /> */}
         </Link>
         {/* Navigation links */}
         <nav className="hidden md:block">

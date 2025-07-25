@@ -15,6 +15,20 @@ import InstructorSection from "../components/core/HomePage/InstructorSection"
 import LearningLanguageSection from "../components/core/HomePage/LearningLanguageSection"
 import TimelineSection from "../components/core/HomePage/Timeline"
 
+// ADD THESE LINES to the top of App.jsx or main.jsx
+
+import React from "react";
+// ... other imports
+import "swiper/css";
+import "swiper/css/free-mode";
+import "swiper/css/pagination";
+import "swiper/css/autoplay"; // It's good practice to import CSS for all modules used
+
+function App() {
+  // ... rest of your App component
+}
+
+
 function Home() {
   return (
     <div>

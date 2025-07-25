@@ -50,7 +50,10 @@ function App() {
 
   return (
     <div className="flex min-h-screen w-screen flex-col bg-richblack-900 font-inter">
-      <Navbar />
+      <div className="fixed top-0 z-50 w-full bg-richblack-900">
+        <Navbar />
+      </div>
+      
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
