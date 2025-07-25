@@ -132,43 +132,111 @@ exports.createCourse = async (req, res) => {
   }
 }
 // Edit Course Details
+// exports.editCourse = async (req, res) => {
+//   try {
+//     const { courseId } = req.body
+//     const updates = req.body
+//     const course = await Course.findById(courseId)
+
+//     if (!course) {
+//       return res.status(404).json({ error: "Course not found" })
+//     }
+
+//     // If Thumbnail Image is found, update it
+//     if (req.files) {
+//       console.log("thumbnail update")
+//       const thumbnail = req.files.thumbnailImage
+//       const thumbnailImage = await uploadImageToCloudinary(
+//         thumbnail,
+//         process.env.FOLDER_NAME
+//       )
+//       course.thumbnail = thumbnailImage.secure_url
+//     }
+
+//     // Update only the fields that are present in the request body
+//     for (const key in updates) {
+//       if (updates.hasOwnProperty(key)) {
+//         if (key === "tag" || key === "instructions") {
+//           course[key] = JSON.parse(updates[key])
+//         } else {
+//           course[key] = updates[key]
+//         }
+//       }
+//     }
+
+//     await course.save()
+
+//     const updatedCourse = await Course.findOne({
+//       _id: courseId,
+//     })
+//       .populate({
+//         path: "instructor",
+//         populate: {
+//           path: "additionalDetails",
+//         },
+//       })
+//       .populate("category")
+//       .populate("ratingAndReviews")
+//       .populate({
+//         path: "courseContent",
+//         populate: {
+//           path: "subSection",
+//         },
+//       })
+//       .exec()
+
+//     res.json({
+//       success: true,
+//       message: "Course updated successfully",
+//       data: updatedCourse,
+//     })
+//   } catch (error) {
+//     console.error(error)
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal server error",
+//       error: error.message,
+//     })
+//   }
+// }
+
 exports.editCourse = async (req, res) => {
   try {
-    const { courseId } = req.body
-    const updates = req.body
-    const course = await Course.findById(courseId)
+    const { courseId, ...updates } = req.body;
 
+    if (!courseId) {
+      return res.status(400).json({ success: false, message: "Course ID missing" });
+    }
+
+    const course = await Course.findById(courseId);
     if (!course) {
-      return res.status(404).json({ error: "Course not found" })
+      return res.status(404).json({ error: "Course not found" });
     }
 
     // If Thumbnail Image is found, update it
-    if (req.files) {
-      console.log("thumbnail update")
-      const thumbnail = req.files.thumbnailImage
-      const thumbnailImage = await uploadImageToCloudinary(
-        thumbnail,
-        process.env.FOLDER_NAME
-      )
-      course.thumbnail = thumbnailImage.secure_url
+    if (req.files && req.files.thumbnailImage) {
+      console.log("Updating thumbnail image...");
+      const thumbnail = req.files.thumbnailImage;
+      const thumbnailImage = await uploadImageToCloudinary(thumbnail, process.env.FOLDER_NAME);
+      course.thumbnail = thumbnailImage.secure_url;
     }
 
     // Update only the fields that are present in the request body
-    for (const key in updates) {
-      if (updates.hasOwnProperty(key)) {
+    for (const key of Object.keys(updates)) {
+      try {
         if (key === "tag" || key === "instructions") {
-          course[key] = JSON.parse(updates[key])
+          course[key] = JSON.parse(updates[key]);
         } else {
-          course[key] = updates[key]
+          course[key] = updates[key];
         }
+      } catch (err) {
+        console.warn(`Skipping update for ${key}:`, err.message);
       }
     }
 
-    await course.save()
+    await course.save();
 
-    const updatedCourse = await Course.findOne({
-      _id: courseId,
-    })
+    const updatedCourse = await Course.findOne({ _id: courseId })
       .populate({
         path: "instructor",
         populate: {
@@ -183,22 +251,23 @@ exports.editCourse = async (req, res) => {
           path: "subSection",
         },
       })
-      .exec()
+      .exec();
 
-    res.json({
+    return res.status(200).json({
       success: true,
       message: "Course updated successfully",
       data: updatedCourse,
-    })
+    });
   } catch (error) {
-    console.error(error)
-    res.status(500).json({
+    console.error("EDIT COURSE ERROR:", error);
+    return res.status(500).json({
       success: false,
       message: "Internal server error",
       error: error.message,
-    })
+    });
   }
-}
+};
+
 // Get Course List
 exports.getAllCourses = async (req, res) => {
   try {
