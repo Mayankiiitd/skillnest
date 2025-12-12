@@ -6,7 +6,7 @@ const {
   // verifySignature,
   verifyPayment,
   sendPaymentSuccessEmail,
-} = require("../controllers/payments")
+} = require("../controllers/payments_temp")
 const { auth, isInstructor, isStudent, isAdmin } = require("../middleware/auth")
 router.post("/capturePayment", auth, isStudent, capturePayment)
 router.post("/verifyPayment", auth, isStudent, verifyPayment)
