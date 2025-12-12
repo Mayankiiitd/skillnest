@@ -8,7 +8,7 @@ const {
   updateDisplayPicture,
   getEnrolledCourses,
   instructorDashboard,
-} = require("../controllers/profile_temp")
+} = require("../controllers/profile")
 
 // ********************************************************************************************************
 //                                      Profile routes
