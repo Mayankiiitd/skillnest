@@ -35,14 +35,13 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const mailSender = async (email, title, body) => {
   try {
-    // ⚠️ IMPORTANT:
-    // If you are in "Testing" mode (no domain verified), you can ONLY send to your own email.
-    // Once you verify your domain on Resend, change this to: "info@yourdomain.com"
-    const fromAddress = "onboarding@resend.dev"; 
+    // ✅ UPDATE: Now using your real, verified domain!
+    // You can change 'noreply' to anything you want (e.g., 'support', 'info', 'admin')
+    const fromAddress = "noreply@skillnest.digital"; 
 
     const data = await resend.emails.send({
       from: fromAddress,
-      to: [email], // Resend requires an array for the 'to' field
+      to: [email], // Now this works for ANY email address (friends, users, etc.)
       subject: title,
       html: body,
     });
