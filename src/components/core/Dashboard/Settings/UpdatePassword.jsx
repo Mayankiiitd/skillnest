@@ -5,7 +5,7 @@ import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 
 import { changePassword } from "../../../../services/operations/SettingsAPI"
-import IconBtn from "../../../Common/IconBtn"
+import IconBtn from "../../../Common_temp/IconBtn"
 
 export default function UpdatePassword() {
   const { token } = useSelector((state) => state.auth)
