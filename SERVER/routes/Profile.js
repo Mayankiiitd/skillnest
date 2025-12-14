@@ -8,7 +8,7 @@ const {
   updateDisplayPicture,
   getEnrolledCourses,
   instructorDashboard,
-} = require("../controllers/Profile")
+} = require("SERVER\controllers\Profile.js")
 
 // ********************************************************************************************************
 //                                      Profile routes
