@@ -117,20 +117,16 @@
 
 import React, { useEffect, useState } from "react";
 import ReactStars from "react-rating-stars-component";
-// Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/pagination";
 import "../../App.css";
-// Icons
+
 import { FaStar } from "react-icons/fa";
-// Import required modules
 import { Autoplay, FreeMode, Pagination } from "swiper/modules";
 
-// Get apiFunction and the endpoint
 import { apiConnector } from "../../services/apiConnector";
 import { ratingsEndpoints } from "../../services/apis";
 
@@ -152,7 +148,6 @@ function ReviewSlider() {
 
   return (
     <div className="text-white">
-      {/* Container has fixed height */}
       <div className="my-[50px] h-[184px] max-w-maxContentTab lg:max-w-maxContent">
         <Swiper
           breakpoints={{
@@ -161,21 +156,22 @@ function ReviewSlider() {
             1024: { slidesPerView: 3 },
             1280: { slidesPerView: 4 },
           }}
+          slidesPerView={4}
           spaceBetween={25}
-          loop={true}
+          // ✅ FIX: Only enable loop if we have enough reviews
+          loop={reviews.length > 3} 
           freeMode={true}
           autoplay={{
             delay: 2500,
             disableOnInteraction: false,
           }}
           modules={[FreeMode, Pagination, Autoplay]}
-          // ✅ FIX 1: Added 'h-full' here so Swiper uses the parent's height
           className="w-full h-full"
         >
           {reviews.map((review, i) => {
             return (
               <SwiperSlide key={i}>
-                {/* ✅ FIX 2: Added 'h-full' to card and removed 'min-w-[250px]' (Swiper handles width) */}
+                {/* ✅ FIX: Added h-full to fill the slide height */}
                 <div className="flex flex-col gap-3 bg-richblack-800 p-3 text-[14px] text-richblack-25 rounded-md h-full">
                   <div className="flex items-center gap-4">
                     <img
