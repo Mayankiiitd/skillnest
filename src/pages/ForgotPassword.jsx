@@ -21,7 +21,7 @@ function ForgotPassword() {
       {loading ? (
         <div className="spinner"></div>
       ) : (
-        <div className="max-w-[500px] p-4 lg:p-8">
+        <div className="mx-auto w-11/12 max-w-[600px] border border-richblack-600 text-richblack-300 rounded-xl p-7 lg:p-14 flex gap-3 flex-col shadow-lg bg-richblack-800 ">
           <h1 className="text-[1.875rem] font-semibold leading-[2.375rem] text-richblack-5">
             {!emailSent ? "Reset your password" : "Check email"}
           </h1>

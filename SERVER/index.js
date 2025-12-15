@@ -1,3 +1,5 @@
+const dotenv = require("dotenv");
+dotenv.config();
 // Importing necessary modules and packages
 const express = require("express");
 const app = express();
@@ -11,13 +13,11 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const { cloudinaryConnect } = require("./config/cloudinary");
 const fileUpload = require("express-fileupload");
-const dotenv = require("dotenv");
 
 // Setting up port number
 const PORT = process.env.PORT || 4000;
 
 // Loading environment variables from .env file
-dotenv.config();
 
 // Connecting to database
 database.connect();
