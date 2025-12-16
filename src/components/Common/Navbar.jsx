@@ -160,7 +160,6 @@
 
 
 // ----------------------------------------------------------------------------------------------------------
-
 import { useEffect, useState } from "react"
 import { AiOutlineMenu, AiOutlineShoppingCart, AiOutlineClose } from "react-icons/ai"
 import { BsChevronDown } from "react-icons/bs"
@@ -183,7 +182,7 @@ function Navbar() {
   const [subLinks, setSubLinks] = useState([])
   const [loading, setLoading] = useState(false)
 
-  // ✅ FIX 1: Add State to track if Mobile Menu is Open
+  // State to track if Mobile Menu is Open
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -203,12 +202,13 @@ function Navbar() {
     return matchPath({ path: route }, location.pathname)
   }
 
-  // ✅ FIX 2: Toggle Function
+  // Toggle Function
   const toggleMobileMenu = () => {
+    console.log("MOBILE MENU CLICKED!") // 🔍 Check Console to see if this prints
     setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
-  // ✅ FIX 3: Close menu when a link is clicked
+  // Close menu when a link is clicked
   const handleLinkClick = () => {
     setIsMobileMenuOpen(false)
   }
@@ -217,7 +217,7 @@ function Navbar() {
     <div
       className={`flex h-14 items-center justify-center border-b-[1px] border-b-richblack-700 ${
         location.pathname !== "/" ? "bg-richblack-800" : ""
-      } transition-all duration-200 relative z-50`} // Added relative z-50
+      } transition-all duration-200 relative z-[1000]`} // 🚨 FIXED: Changed z-50 to z-[1000]
     >
       <div className="flex w-11/12 max-w-maxContent items-center justify-between">
         {/* Logo */}
